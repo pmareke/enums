@@ -1,9 +1,9 @@
 import pytest
 
-from expects import equal, expect
+from expects import equal, expect, raise_error
 
 from src.enums import calculate_engineer_cost
-from src.engineer import Engineer, EngineerType
+from src.engineer import Engineer, EngineerType, InvalidEngineeringTypeException
 
 
 class TestEnums:
@@ -26,13 +26,11 @@ class TestEnums:
 
         expect(total_cost).to(equal(expected_total_cost))
 
-    def test_all_possible_values(self) -> None:
-        expects_values = [
-            "Junior",
-            "Senior",
-            "Staff",
-            "Team Lead",
-            "Engineering Manager",
-        ]
+    def test_raise_an_error_when_creating_with_an_invalid_type(self) -> None:
+        invalid_type = "invalid-type"
 
-        expect(EngineerType.all_values()).to(equal(expects_values))
+        error_message = f"Sorry the type '{invalid_type}' is not correct, please use one of {EngineerType.all_values()}"
+        try:
+            EngineerType.from_(invalid_type)
+        except InvalidEngineeringTypeException as ex:
+            expect(str(ex)).to(equal(error_message))
